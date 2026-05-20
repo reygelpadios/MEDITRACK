@@ -106,10 +106,12 @@ body {
 ════════════════════════════════════════════════ */
 #login-screen {
   min-height: 100vh;
-  display: flex;
+  display: grid;
+  grid-template-columns: minmax(320px, 1fr) minmax(360px, 500px);
   align-items: center;
-  justify-content: flex-end; /* moves form to right */
-  padding: 24px 8%;
+  justify-content: center;
+  gap: clamp(36px, 7vw, 104px);
+  padding: 24px clamp(24px, 8vw, 112px);
   background: var(--bg);
   position: relative;
   overflow: hidden;
@@ -136,6 +138,37 @@ body {
   bottom: -80px; left: -80px;
 }
 
+.login-heart-side {
+  position: relative;
+  z-index: 1;
+  width: min(48vw, 680px);
+  height: clamp(430px, 70vh, 720px);
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: cardRise 0.65s var(--spring) both;
+}
+
+#root {
+  width: 100%;
+  height: 100%;
+  min-height: 420px;
+  position: relative;
+}
+
+#root canvas {
+  width: 100% !important;
+  height: 100% !important;
+  display: block;
+  cursor: grab;
+  touch-action: none;
+}
+
+#root canvas:active {
+  cursor: grabbing;
+}
+
 .login-card {
   background: var(--surface);
   border-radius: var(--r-xl);
@@ -144,7 +177,7 @@ body {
   max-width: 500px;
   padding: 52px 48px;
   position: relative;
-  z-index: 1;
+  z-index: 2;
   animation: cardRise 0.55s var(--spring) both;
 }
 
@@ -1492,6 +1525,18 @@ input::placeholder { color: var(--text-muted); }
 /* ════════════════════════════════════════════════
    RESPONSIVE — MOBILE
 ════════════════════════════════════════════════ */
+@media (max-width: 980px) {
+  #login-screen {
+    grid-template-columns: 1fr;
+    justify-items: center;
+    padding: 22px;
+  }
+
+  .login-heart-side {
+    display: none;
+  }
+}
+
 @media (max-width: 768px) {
   :root { --sidebar-w: 280px; }
 
@@ -1547,6 +1592,10 @@ input::placeholder { color: var(--text-muted); }
      LOGIN SCREEN
 ════════════════════════════════════════════════ -->
 <div id="login-screen">
+  <div class="login-heart-side" aria-hidden="true">
+    <div id="root"></div>
+  </div>
+
   <div class="login-card">
     <div class="login-brand">
       <div class="login-logo">
@@ -1555,10 +1604,6 @@ input::placeholder { color: var(--text-muted); }
       <div class="login-title">MediTrack</div>
       <div class="login-sub">Your trusted medication companion</div>
     </div>
-
-    <div class="login-heart-side">
-  <div id="root"></div>
-</div>
 
     <div class="step-dots">
       <div class="step-dot active" id="dot-0"></div>
@@ -2392,6 +2437,7 @@ function finishSetup() {
 // ══════════════════════════════════════════════════════
 function launchApp() {
   document.getElementById('login-screen').style.display = 'none';
+  window.dispatchEvent(new Event('meditrack:stop-heart'));
   document.getElementById('app-shell').classList.add('visible');
   updateSidebarUser();
   refreshDashboard();
@@ -3262,6 +3308,7 @@ if ('Notification' in window && Notification.permission === 'default') {
 (function init() {
   if (store.get('loggedIn') && store.get('patient')) {
     document.getElementById('login-screen').style.display = 'none';
+    window.dispatchEvent(new Event('meditrack:stop-heart'));
     document.getElementById('app-shell').classList.add('visible');
     updateSidebarUser();
     refreshDashboard();
@@ -3272,5 +3319,6 @@ if ('Notification' in window && Notification.permission === 'default') {
   }
 })();
 </script>
+<script type="module" src="./index.js"></script>
 </body>
 </html>

@@ -1,23 +1,36 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 
+const root = document.getElementById('root');
+const loginScreen = document.getElementById('login-screen');
+
+if (root && loginScreen && getComputedStyle(loginScreen).display !== 'none') {
+const getRootSize = () => {
+  const rect = root.getBoundingClientRect();
+  return {
+    width: Math.max(1, Math.round(rect.width || 640)),
+    height: Math.max(1, Math.round(rect.height || 520)),
+  };
+};
+const initialSize = getRootSize();
+
 // ─── Renderer ────────────────────────────────────────────────────────────────
-const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
-renderer.setSize(window.innerWidth, window.innerHeight);
+const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+renderer.setSize(initialSize.width, initialSize.height);
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+renderer.setClearColor(0x000000, 0);
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
 renderer.toneMappingExposure = 1.4;
-const root = document.getElementById('root') ?? document.body;
-root.appendChild(renderer.domElement);
+root.replaceChildren(renderer.domElement);
 
 // ─── Scene & Camera ──────────────────────────────────────────────────────────
 const scene = new THREE.Scene();
-scene.background = new THREE.Color(0xe8e8ea);
+scene.background = null;
 
-const camera = new THREE.PerspectiveCamera(42, window.innerWidth / window.innerHeight, 0.1, 100);
-camera.position.set(0, 0.5, 9.5);
+const camera = new THREE.PerspectiveCamera(42, initialSize.width / initialSize.height, 0.1, 100);
+camera.position.set(0, 0.5, 8.8);
 
 // ─── Controls ────────────────────────────────────────────────────────────────
 const controls = new OrbitControls(camera, renderer.domElement);
@@ -592,84 +605,9 @@ groundShadow.rotation.x = -Math.PI / 2;
 groundShadow.position.y = -2.2;
 scene.add(groundShadow);
 
-// ─── Subtle ground plane ─────────────────────────────────────────────────────
-const floorGeo = new THREE.PlaneGeometry(30, 30);
-const floorMat = new THREE.MeshStandardMaterial({ color: 0xe0e0e2, roughness: 0.9, metalness: 0.0 });
-const floor = new THREE.Mesh(floorGeo, floorMat);
-floor.name = 'floor';
-floor.rotation.x = -Math.PI / 2;
-floor.position.y = -2.25;
-floor.receiveShadow = true;
-scene.add(floor);
-
 // ─── Initial orientation — standard anterior anatomical view ─────────────────
 heartGroup.rotation.y = 0.18;
 heartGroup.rotation.x = 0.06;
-
-// ─── HUD ─────────────────────────────────────────────────────────────────────
-const style = document.createElement('style');
-style.textContent = `
-  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap');
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { overflow: hidden; }
-
-  #title {
-    position: fixed; top: 16px; left: 50%; transform: translateX(-50%);
-    color: #333; font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 500;
-    letter-spacing: 0.10em; text-transform: uppercase;
-    background: rgba(255,255,255,0.82); padding: 7px 20px; border-radius: 20px;
-    border: 1px solid rgba(0,0,0,0.10); backdrop-filter: blur(8px);
-    white-space: nowrap;
-  }
-
-  #legend {
-    position: fixed; right: 14px; top: 50%; transform: translateY(-50%);
-    font-family: 'Inter', sans-serif; font-size: 11.5px; color: #333;
-    background: rgba(255,255,255,0.80); padding: 14px 16px; border-radius: 12px;
-    border: 1px solid rgba(0,0,0,0.08); backdrop-filter: blur(8px);
-    line-height: 2.2; min-width: 170px;
-  }
-  .leg-row { display: flex; align-items: center; gap: 8px; }
-  .leg-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
-  .leg-label { font-weight: 400; color: #222; font-size: 11px; }
-
-  #controls {
-    position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%);
-    font-family: 'Inter', sans-serif; font-size: 11.5px; color: #555;
-    background: rgba(255,255,255,0.75); padding: 7px 18px; border-radius: 16px;
-    border: 1px solid rgba(0,0,0,0.08); backdrop-filter: blur(6px);
-    white-space: nowrap;
-  }
-
-  @media (max-width: 600px) {
-    #legend { display: none; }
-    #title { font-size: 12px; padding: 6px 14px; }
-  }
-`;
-document.head.appendChild(style);
-
-const titleEl = document.createElement('div');
-titleEl.id = 'title';
-titleEl.textContent = 'Human Heart — Anatomical 3D Model';
-document.body.appendChild(titleEl);
-
-const legendEl = document.createElement('div');
-legendEl.id = 'legend';
-legendEl.innerHTML = `
-  <div class="leg-row"><div class="leg-dot" style="background:#C0392B"></div><div class="leg-label">Myocardium (LV / RV)</div></div>
-  <div class="leg-row"><div class="leg-dot" style="background:#96281B"></div><div class="leg-label">Atria</div></div>
-  <div class="leg-row"><div class="leg-dot" style="background:#E74C3C"></div><div class="leg-label">Aorta & Branches</div></div>
-  <div class="leg-row"><div class="leg-dot" style="background:#BE3A2A"></div><div class="leg-label">Pulmonary Veins</div></div>
-  <div class="leg-row"><div class="leg-dot" style="background:#1A3A7A"></div><div class="leg-label">SVC / IVC / Pulm. A.</div></div>
-  <div class="leg-row"><div class="leg-dot" style="background:#2255A4"></div><div class="leg-label">Coronary Vessels</div></div>
-  <div class="leg-row"><div class="leg-dot" style="background:#F5E6C8"></div><div class="leg-label">Epicardial Fat</div></div>
-`;
-document.body.appendChild(legendEl);
-
-const controlsEl = document.createElement('div');
-controlsEl.id = 'controls';
-controlsEl.textContent = 'Drag to rotate  ·  Scroll / Pinch to zoom  ·  Full 360° inspection';
-document.body.appendChild(controlsEl);
 
 // ─── Auto-rotate until user interacts ────────────────────────────────────────
 let userInteracted = false;
@@ -702,8 +640,21 @@ function animate() {
 renderer.setAnimationLoop(animate);
 
 // ─── RESIZE ──────────────────────────────────────────────────────────────────
-window.addEventListener('resize', () => {
-  camera.aspect = window.innerWidth / window.innerHeight;
+function resizeHeart() {
+  const { width, height } = getRootSize();
+  camera.aspect = width / height;
   camera.updateProjectionMatrix();
-  renderer.setSize(window.innerWidth, window.innerHeight);
-});
+  renderer.setSize(width, height);
+}
+
+const resizeObserver = 'ResizeObserver' in window ? new ResizeObserver(resizeHeart) : null;
+resizeObserver?.observe(root);
+window.addEventListener('resize', resizeHeart);
+
+window.addEventListener('meditrack:stop-heart', () => {
+  renderer.setAnimationLoop(null);
+  resizeObserver?.disconnect();
+  window.removeEventListener('resize', resizeHeart);
+  controls.dispose();
+}, { once: true });
+}
