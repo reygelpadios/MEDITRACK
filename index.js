@@ -7,9 +7,10 @@ const loginScreen = document.getElementById('login-screen');
 if (root && loginScreen && getComputedStyle(loginScreen).display !== 'none') {
 const getRootSize = () => {
   const rect = root.getBoundingClientRect();
+  const parentRect = root.parentElement?.getBoundingClientRect();
   return {
-    width: Math.max(1, Math.round(rect.width || 640)),
-    height: Math.max(1, Math.round(rect.height || 520)),
+    width: Math.max(320, Math.round(rect.width || parentRect?.width || 640)),
+    height: Math.max(420, Math.round(rect.height || parentRect?.height || 520)),
   };
 };
 const initialSize = getRootSize();
@@ -30,7 +31,7 @@ const scene = new THREE.Scene();
 scene.background = null;
 
 const camera = new THREE.PerspectiveCamera(42, initialSize.width / initialSize.height, 0.1, 100);
-camera.position.set(0, 0.5, 8.8);
+camera.position.set(0, 0.35, 7.2);
 
 // ─── Controls ────────────────────────────────────────────────────────────────
 const controls = new OrbitControls(camera, renderer.domElement);
@@ -41,6 +42,7 @@ controls.zoomSpeed = 1.1;
 controls.minDistance = 4;
 controls.maxDistance = 16;
 controls.target.set(0, 0.2, 0);
+controls.update();
 
 // ─── Lights ──────────────────────────────────────────────────────────────────
 // Main top-right key light
@@ -605,6 +607,9 @@ groundShadow.rotation.x = -Math.PI / 2;
 groundShadow.position.y = -2.2;
 scene.add(groundShadow);
 
+heartGroup.position.y = 0.1;
+heartGroup.scale.setScalar(1.12);
+
 // ─── Initial orientation — standard anterior anatomical view ─────────────────
 heartGroup.rotation.y = 0.18;
 heartGroup.rotation.x = 0.06;
@@ -631,7 +636,7 @@ function animate() {
   const bps = bpm / 60;
   const phase = (t * bps) % 1.0;
   const beat = 1.0 + Math.pow(Math.max(0, Math.sin(phase * Math.PI)), 10) * 0.025;
-  heartGroup.scale.setScalar(beat);
+  heartGroup.scale.setScalar(1.12 * beat);
 
   controls.update();
   renderer.render(scene, camera);
