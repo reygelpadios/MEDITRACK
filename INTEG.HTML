@@ -335,6 +335,54 @@ body {
   line-height: 1.55;
 }
 
+.auth-panel,
+.setup-panel {
+  display: none;
+}
+.auth-panel.active,
+.setup-panel.active {
+  display: block;
+  animation: stepIn 0.3s var(--ease) both;
+}
+.auth-view { display: none; }
+.auth-view.active { display: block; }
+.auth-options {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin: -8px 0 20px;
+}
+.remember-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text-mid);
+  font-size: 13px;
+  cursor: pointer;
+}
+.remember-row input {
+  accent-color: var(--sage);
+}
+.link-btn {
+  border: 0;
+  background: transparent;
+  color: var(--sage-light);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 0;
+}
+.link-btn:hover {
+  color: var(--rose);
+}
+.auth-switch {
+  text-align: center;
+  margin-top: 18px;
+  color: var(--text-soft);
+  font-size: 13px;
+}
+
 /* Mode selection cards */
 .mode-cards {
   display: grid; grid-template-columns: 1fr 1fr;
@@ -2192,15 +2240,50 @@ input::placeholder { color: var(--text-muted); }
     <div class="login-brand">
       <div class="login-logo">
   <img src="MED LOGO.png" alt="MediTrack Logo">
-</div>
-      <div class="login-title">MediTrack</div>
-      <div class="login-sub">Your trusted medication companion</div>
-    </div>
+	</div>
+	      <div class="login-title">MediTrack</div>
+	      <div class="login-sub">Your trusted medication companion</div>
+	    </div>
 
-    <div class="step-dots">
-      <div class="step-dot active" id="dot-0"></div>
-      <div class="step-dot"        id="dot-1"></div>
-      <div class="step-dot"        id="dot-2"></div>
+	    <div class="auth-panel active" id="auth-panel">
+	      <div class="auth-view active" id="auth-login-view">
+	        <div class="step-title">Welcome back</div>
+	        <div class="step-desc">Sign in to sync your medication plan with your secure MediTrack database.</div>
+	        <div class="form-group"><label>Email</label><input type="email" id="login-email" placeholder="you@example.com" autocomplete="email"></div>
+	        <div class="form-group"><label>Password</label><input type="password" id="login-password" placeholder="Your password" autocomplete="current-password"></div>
+	        <div class="auth-options">
+	          <label class="remember-row"><input type="checkbox" id="login-remember"> Remember me</label>
+	          <button class="link-btn" onclick="forgotPassword()">Forgot Password?</button>
+	        </div>
+	        <button class="btn btn-primary btn-full" onclick="handleLogin()">Sign in →</button>
+	        <div class="auth-switch">New to MediTrack? <button class="link-btn" onclick="showAuthView('register')">Create account</button></div>
+	      </div>
+
+	      <div class="auth-view" id="auth-register-view">
+	        <div class="step-title">Create your account</div>
+	        <div class="step-desc">Register first, then complete the patient information setup.</div>
+	        <div class="form-group"><label>Email</label><input type="email" id="register-email" placeholder="you@example.com" autocomplete="email"></div>
+	        <div class="form-row">
+	          <div class="form-group"><label>Password</label><input type="password" id="register-password" placeholder="Password" autocomplete="new-password"></div>
+	          <div class="form-group"><label>Confirm Password</label><input type="password" id="register-confirm" placeholder="Confirm password" autocomplete="new-password"></div>
+	        </div>
+	        <div class="form-group">
+	          <label>Role</label>
+	          <select id="register-role">
+	            <option value="patient">Patient</option>
+	            <option value="caregiver">Caregiver</option>
+	          </select>
+	        </div>
+	        <button class="btn btn-primary btn-full" onclick="handleRegister()">Create account →</button>
+	        <div class="auth-switch">Already have an account? <button class="link-btn" onclick="showAuthView('login')">Sign in</button></div>
+	      </div>
+	    </div>
+
+	    <div class="setup-panel" id="setup-panel">
+	    <div class="step-dots">
+	      <div class="step-dot active" id="dot-0"></div>
+	      <div class="step-dot"        id="dot-1"></div>
+	      <div class="step-dot"        id="dot-2"></div>
     </div>
 
     <div class="login-step active" id="step-0">
@@ -2272,11 +2355,12 @@ input::placeholder { color: var(--text-muted); }
       </div>
       <div style="display:flex;gap:10px;">
         <button class="btn btn-ghost" onclick="goStep(1)" style="flex:1;">← Back</button>
-        <button class="btn btn-primary" onclick="finishSetup()" style="flex:2;">Get Started ✓</button>
-      </div>
-    </div>
-  </div>
-</div>
+	        <button class="btn btn-primary" onclick="finishSetup()" style="flex:2;">Get Started ✓</button>
+	      </div>
+	    </div>
+	    </div>
+	  </div>
+	</div>
 
 <!-- ════════════════════════════════════════════════
      APP SHELL
@@ -2647,7 +2731,7 @@ input::placeholder { color: var(--text-muted); }
             <div class="card-title">About MediTrack</div>
             <div style="font-size:14px;color:var(--text-mid);line-height:2;">
               <div><strong style="color:var(--text-head);">Version:</strong> 2.1.0 Web App</div>
-              <div><strong style="color:var(--text-head);">Storage:</strong> LocalStorage (offline-first)</div>
+              <div><strong style="color:var(--text-head);">Storage:</strong> LocalStorage offline-first with SQLite sync</div>
               <div><strong style="color:var(--text-head);">Purpose:</strong> Medication reminders for Filipino elderly patients and their caregivers</div>
               <div style="margin-top:12px;color:var(--sage);font-size:13px;">Designed with care for patients with chronic conditions. 🌿</div>
             </div>
@@ -2850,6 +2934,251 @@ const store = {
 };
 
 // ══════════════════════════════════════════════════════
+//  BACKEND API + OFFLINE SYNC
+// ══════════════════════════════════════════════════════
+const API_BASE = 'http://localhost:3000';
+let isSyncing = false;
+
+function getCurrentUser() {
+  return store.get('user') || null;
+}
+
+function getPendingSync() {
+  return store.get('pendingSync') || [];
+}
+
+function savePendingSync(queue) {
+  store.set('pendingSync', queue);
+}
+
+function getRemotePatientId() {
+  const pt = store.get('patient') || {};
+  const user = getCurrentUser() || {};
+  return pt.remoteId || user.patient_id || null;
+}
+
+async function apiFetch(path, options = {}) {
+  const res = await fetch(`${API_BASE}${path}`, {
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...(options.headers || {})
+    }
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data.error || data.details || 'Database request failed.');
+  return data;
+}
+
+function queueSync(type, payload) {
+  const queue = getPendingSync();
+  queue.push({
+    id: `${Date.now()}_${Math.random().toString(16).slice(2)}`,
+    type,
+    payload,
+    createdAt: new Date().toISOString()
+  });
+  savePendingSync(queue);
+}
+
+function syncOrQueue(type, payload) {
+  queueSync(type, payload);
+  syncPendingData();
+}
+
+function queueLocalSnapshotSync() {
+  getMeds().forEach(med => queueSync('medication:save', { medication: med }));
+  getLogs().forEach(log => queueSync('log:save', { log }));
+  getMembers().forEach(member => queueSync('caregiver:save', { member }));
+}
+
+function buildPatientPayload(patient) {
+  const user = getCurrentUser();
+  return {
+    userId: user?.id,
+    firstName: patient.firstName,
+    lastName: patient.lastName,
+    dob: patient.dob,
+    blood: patient.blood,
+    condition: patient.condition,
+    allergies: patient.allergies,
+    insurance: patient.insurance,
+    address: patient.address,
+    notes: patient.notes,
+    idNumber: patient.idNumber,
+    setupMode: patient.setupMode,
+    capMode: patient.capMode,
+    emergencyContact: patient.emergencyContact || ''
+  };
+}
+
+function mergeRemotePatient(remotePatient) {
+  if (!remotePatient) return;
+  const existing = store.get('patient') || {};
+  const merged = {
+    ...existing,
+    ...remotePatient,
+    caregiverName: existing.caregiverName || remotePatient.caregiverName || '',
+    caregiverRel: existing.caregiverRel || remotePatient.caregiverRel || ''
+  };
+  store.set('patient', merged);
+
+  const user = getCurrentUser();
+  if (user) store.set('user', { ...user, patient_id: merged.remoteId });
+}
+
+function buildMedicationPayload(med) {
+  return {
+    patientId: getRemotePatientId(),
+    localId: String(med.id),
+    name: med.name,
+    dose: med.dose,
+    type: med.type,
+    freqLabel: med.freqLabel,
+    times: med.times || [],
+    startDate: med.startDate,
+    endDate: med.endDate,
+    notes: med.notes,
+    status: med.active === false ? 'archived' : 'active',
+    active: med.active !== false
+  };
+}
+
+function mergeRemoteMedication(localId, remoteMed) {
+  if (!remoteMed) return;
+  const meds = getMeds();
+  const idx = meds.findIndex(m => String(m.id) === String(localId));
+  if (idx >= 0) {
+    meds[idx] = { ...meds[idx], remoteId: remoteMed.remoteId };
+    saveMeds(meds);
+  }
+}
+
+function buildLogPayload(log) {
+  const med = getMeds().find(m => String(m.id) === String(log.medId));
+  return {
+    patientId: getRemotePatientId(),
+    medicationId: med?.remoteId || null,
+    localMedicationId: String(log.medId),
+    localId: String(log.id),
+    date: log.date,
+    scheduledTime: log.scheduledTime,
+    takenAt: log.takenAt,
+    status: log.status,
+    loggedBy: log.loggedBy || 'Self'
+  };
+}
+
+function buildCaregiverPayload(member) {
+  return {
+    patientId: getRemotePatientId(),
+    localId: String(member.id),
+    name: member.name,
+    relationship: member.relationship,
+    phone: member.phone,
+    access: member.access
+  };
+}
+
+function mergeRemoteCaregiver(localId, remoteMember) {
+  if (!remoteMember) return;
+  const members = getMembers();
+  const idx = members.findIndex(m => String(m.id) === String(localId));
+  if (idx >= 0) {
+    members[idx] = { ...members[idx], remoteId: remoteMember.remoteId };
+    saveMembers(members);
+  }
+}
+
+async function syncAction(item) {
+  if (item.type !== 'patient:save' && !getRemotePatientId()) {
+    throw new Error('Patient profile must sync before related records.');
+  }
+
+  if (item.type === 'patient:save') {
+    const existingId = getRemotePatientId();
+    const body = buildPatientPayload(item.payload.patient);
+    const data = existingId
+      ? await apiFetch(`/patients/${existingId}`, { method: 'PUT', body: JSON.stringify(body) })
+      : await apiFetch('/patients', { method: 'POST', body: JSON.stringify(body) });
+    mergeRemotePatient(data.frontend);
+    return;
+  }
+
+  if (item.type === 'medication:save') {
+    const body = buildMedicationPayload(item.payload.medication);
+    const data = await apiFetch('/medications', { method: 'POST', body: JSON.stringify(body) });
+    mergeRemoteMedication(item.payload.medication.id, data.frontend);
+    return;
+  }
+
+  if (item.type === 'medication:delete') {
+    const med = item.payload.medication;
+    if (med.remoteId) await apiFetch(`/medications/${med.remoteId}`, { method: 'DELETE' });
+    else await apiFetch('/medications', { method: 'POST', body: JSON.stringify(buildMedicationPayload({ ...med, active: false })) });
+    return;
+  }
+
+  if (item.type === 'log:save') {
+    await apiFetch('/logs', { method: 'POST', body: JSON.stringify(buildLogPayload(item.payload.log)) });
+    return;
+  }
+
+  if (item.type === 'caregiver:save') {
+    const data = await apiFetch('/caregivers', { method: 'POST', body: JSON.stringify(buildCaregiverPayload(item.payload.member)) });
+    mergeRemoteCaregiver(item.payload.member.id, data.frontend);
+    return;
+  }
+
+  if (item.type === 'caregiver:delete' && item.payload.member?.remoteId) {
+    await apiFetch(`/caregivers/${item.payload.member.remoteId}`, { method: 'DELETE' });
+  }
+}
+
+async function syncPendingData() {
+  if (isSyncing || !navigator.onLine || !getCurrentUser()) return;
+  let queue = getPendingSync();
+  if (!queue.length) return;
+  isSyncing = true;
+  try {
+    while (queue.length) {
+      const item = queue[0];
+      await syncAction(item);
+      queue = queue.slice(1);
+      savePendingSync(queue);
+    }
+    toast('Database sync complete.', 'success');
+  } catch (err) {
+    toast(`Sync paused: ${err.message}`, 'warning');
+  } finally {
+    isSyncing = false;
+  }
+}
+
+async function loadRemoteAccountData(user) {
+  store.set('user', user);
+  if (!user.patient_id) {
+    showSetupWizard(user.role);
+    return;
+  }
+
+  const patientData = await apiFetch(`/patients/${user.patient_id}`);
+  mergeRemotePatient(patientData.frontend);
+
+  const [medData, logData, caregiverData] = await Promise.all([
+    apiFetch(`/medications/${user.patient_id}`),
+    apiFetch(`/logs/${user.patient_id}`),
+    apiFetch(`/caregivers/${user.patient_id}`)
+  ]);
+  store.set('meds', medData.frontend || []);
+  store.set('logs', logData.frontend || []);
+  store.set('members', caregiverData.frontend || []);
+  store.set('loggedIn', true);
+  launchApp();
+  syncPendingData();
+}
+
+// ══════════════════════════════════════════════════════
 //  THEME TOGGLE (NEW)
 // ══════════════════════════════════════════════════════
 function applyTheme(dark) {
@@ -2902,7 +3231,7 @@ let weeklyChart  = null;
 function checkOnline() {
   document.getElementById('offline-bar').classList.toggle('show', !navigator.onLine);
 }
-window.addEventListener('online',  checkOnline);
+window.addEventListener('online', () => { checkOnline(); syncPendingData(); });
 window.addEventListener('offline', checkOnline);
 checkOnline();
 
@@ -2950,6 +3279,81 @@ setInterval(tickDate, 60000);
 // ══════════════════════════════════════════════════════
 //  LOGIN FLOW
 // ══════════════════════════════════════════════════════
+function showAuthView(view) {
+  document.getElementById('auth-login-view').classList.toggle('active', view === 'login');
+  document.getElementById('auth-register-view').classList.toggle('active', view === 'register');
+}
+
+function showSetupWizard(role = 'patient') {
+  document.getElementById('auth-panel').classList.remove('active');
+  document.getElementById('setup-panel').classList.add('active');
+  selectMode(role);
+  goStep(1);
+}
+
+function forgotPassword() {
+  triggerShake(document.querySelector('.login-card'));
+  toast('Password reset is not connected yet. Please contact your system administrator.', 'info');
+}
+
+async function handleRegister() {
+  const email = document.getElementById('register-email').value.trim();
+  const password = document.getElementById('register-password').value;
+  const confirmPassword = document.getElementById('register-confirm').value;
+  const role = document.getElementById('register-role').value;
+
+  if (!email || !password || !confirmPassword) {
+    triggerShake(document.querySelector('.login-card'));
+    toast('Email, password, and confirmation are required.', 'warning');
+    return;
+  }
+  if (password !== confirmPassword) {
+    triggerShake(document.querySelector('.login-card'));
+    toast('Passwords do not match.', 'warning');
+    return;
+  }
+
+  try {
+    const data = await apiFetch('/register', {
+      method: 'POST',
+      body: JSON.stringify({ email, password, confirmPassword, role })
+    });
+    store.set('user', data.user);
+    store.set('loggedIn', false);
+    toast('Account created. Complete the patient setup next.', 'success');
+    showSetupWizard(data.user.role);
+  } catch (err) {
+    triggerShake(document.querySelector('.login-card'));
+    toast(err.message || 'Registration failed.', 'error');
+  }
+}
+
+async function handleLogin() {
+  const email = document.getElementById('login-email').value.trim();
+  const password = document.getElementById('login-password').value;
+  const remember = document.getElementById('login-remember').checked;
+
+  if (!email || !password) {
+    triggerShake(document.querySelector('.login-card'));
+    toast('Email and password are required.', 'warning');
+    return;
+  }
+
+  try {
+    const data = await apiFetch('/login', {
+      method: 'POST',
+      body: JSON.stringify({ email, password })
+    });
+    if (remember) store.set('rememberEmail', email);
+    else store.del('rememberEmail');
+    toast('Login successful.', 'success');
+    await loadRemoteAccountData(data.user);
+  } catch (err) {
+    triggerShake(document.querySelector('.login-card'));
+    toast(err.message || 'Login failed.', 'error');
+  }
+}
+
 function selectMode(m) {
   setupMode = m;
   document.getElementById('mode-patient').classList.toggle('selected', m === 'patient');
@@ -2982,7 +3386,7 @@ function selectCap(c) {
   document.getElementById('step1-next').disabled = false;
 }
 
-function finishSetup() {
+async function finishSetup() {
   const fn = document.getElementById('reg-firstname').value.trim();
   const ln = document.getElementById('reg-lastname').value.trim();
   if (!fn || !ln) {
@@ -3005,6 +3409,9 @@ function finishSetup() {
   };
   store.set('patient', patient);
   store.set('loggedIn', true);
+  queueSync('patient:save', { patient });
+  queueLocalSnapshotSync();
+  syncPendingData();
   launchApp();
 }
 
@@ -3115,7 +3522,7 @@ function getLogs()     { return store.get('logs') || []; }
 function saveLogs(arr) { store.set('logs', arr); }
 
 function clearAccountData() {
-  ['patient', 'meds', 'logs', 'contacts', 'members', 'activity', 'loggedIn'].forEach(k => store.del(k));
+  ['user', 'patient', 'meds', 'logs', 'contacts', 'members', 'activity', 'pendingSync', 'loggedIn'].forEach(k => store.del(k));
   Object.values(alarmTimers).forEach(clearTimeout);
   Object.values(snoozeTimers).forEach(clearTimeout);
   alarmTimers = {};
@@ -3196,7 +3603,7 @@ document.getElementById('save-med-btn').addEventListener('click', () => {
   const meds   = getMeds();
   if (editId) {
     const idx = meds.findIndex(m => m.id == editId);
-    if (idx >= 0) { med.id = parseInt(editId); meds[idx] = med; }
+    if (idx >= 0) { med.id = parseInt(editId); med.remoteId = meds[idx].remoteId; meds[idx] = med; }
     toast(`${name} updated!`, 'success');
   } else {
     med.id = Date.now();
@@ -3205,6 +3612,7 @@ document.getElementById('save-med-btn').addEventListener('click', () => {
     addActivity(`Medication added: ${name} ${dose}`);
   }
   saveMeds(meds);
+  syncOrQueue('medication:save', { medication: med });
   closeModal('modal-med');
   refreshDashboard();
   renderScheduler();
@@ -3218,7 +3626,9 @@ function deleteMed(id) {
   if (!confirm('Remove this medication? This will archive all its reminders.')) return;
   const meds = getMeds();
   const med  = meds.find(m => m.id == id);
+  const archived = med ? { ...med, active: false } : null;
   saveMeds(meds.map(m => m.id == id ? { ...m, active: false } : m));
+  if (archived) syncOrQueue('medication:delete', { medication: archived });
   if (med) addActivity(`Medication removed: ${med.name}`);
   toast('Medication removed.', 'info');
   refreshDashboard();
@@ -3245,9 +3655,18 @@ function markTaken(medId, time, date_, by = 'Self') {
     delete snoozeTimers[snoozeKey];
   }
   const existing = logs.find(l => l.medId == medId && l.date === date_ && l.scheduledTime === time);
-  if (existing) { existing.status = 'taken'; existing.takenAt = new Date().toISOString(); existing.loggedBy = by; }
-  else logs.push({ id: Date.now(), medId, date: date_, scheduledTime: time, status: 'taken', takenAt: new Date().toISOString(), loggedBy: by });
+  let logEntry;
+  if (existing) {
+    existing.status = 'taken';
+    existing.takenAt = new Date().toISOString();
+    existing.loggedBy = by;
+    logEntry = existing;
+  } else {
+    logEntry = { id: Date.now(), medId, date: date_, scheduledTime: time, status: 'taken', takenAt: new Date().toISOString(), loggedBy: by };
+    logs.push(logEntry);
+  }
   saveLogs(logs);
+  syncOrQueue('log:save', { log: logEntry });
   const med = getMeds().find(m => m.id == medId);
   if (med) { toast(`✅ ${med.name} marked as taken!`, 'success'); addActivity(`${med.name} (${fmtTime(time)}) marked as taken.`); }
   if (currentAlarm?.medId == medId && currentAlarm?.time === time) dismissAlarm();
@@ -3807,7 +4226,7 @@ document.getElementById('save-patient-btn').addEventListener('click', () => {
   const ln = document.getElementById('pt-lname').value.trim();
   if (!fn || !ln) { toast('First and last name are required.', 'warning'); return; }
   const pt = store.get('patient') || {};
-  store.set('patient', {
+  const updatedPatient = {
     ...pt,
     firstName: fn, lastName: ln,
     dob:       document.getElementById('pt-dob').value,
@@ -3816,7 +4235,9 @@ document.getElementById('save-patient-btn').addEventListener('click', () => {
     allergies: document.getElementById('pt-allergies').value,
     insurance: document.getElementById('pt-insurance').value,
     address:   document.getElementById('pt-address').value,
-  });
+  };
+  store.set('patient', updatedPatient);
+  syncOrQueue('patient:save', { patient: updatedPatient });
   toast('Profile updated!', 'success');
   closeModal('modal-patient');
   renderPatientID();
@@ -3831,7 +4252,9 @@ document.getElementById('edit-notes-btn').addEventListener('click', () => {
 document.getElementById('save-notes-btn').addEventListener('click', () => {
   const pt    = store.get('patient') || {};
   const notes = document.getElementById('notes-input').value;
-  store.set('patient', { ...pt, notes });
+  const updatedPatient = { ...pt, notes };
+  store.set('patient', updatedPatient);
+  syncOrQueue('patient:save', { patient: updatedPatient });
   document.getElementById('notes-display').textContent = notes || 'No notes yet.';
   closeModal('modal-notes');
   toast('Notes saved!', 'success');
@@ -3901,14 +4324,16 @@ document.getElementById('save-member-btn').addEventListener('click', () => {
   const name = document.getElementById('fm-name').value.trim();
   if (!name) { toast('Name is required.', 'warning'); return; }
   const members = getMembers();
-  members.push({
+  const member = {
     id: Date.now(), name,
     relationship: document.getElementById('fm-rel').value,
     phone:        document.getElementById('fm-phone').value,
     access:       document.getElementById('fm-access').value,
     addedAt:      new Date().toISOString()
-  });
+  };
+  members.push(member);
   saveMembers(members);
+  syncOrQueue('caregiver:save', { member });
   addActivity(`Family member added: ${name}`);
   toast('Member added!', 'success');
   closeModal('modal-member');
@@ -3998,7 +4423,9 @@ function clearTodayMedicationActivity() {
 }
 
 function deleteMember(id) {
+  const member = getMembers().find(m => m.id == id);
   saveMembers(getMembers().filter(m => m.id != id));
+  if (member) syncOrQueue('caregiver:delete', { member });
   toast('Member removed.', 'info');
   renderPortal();
 }
@@ -4078,6 +4505,11 @@ if ('Notification' in window && Notification.permission === 'default') {
 //  INIT
 // ══════════════════════════════════════════════════════
 (function init() {
+  const remembered = store.get('rememberEmail');
+  if (remembered) {
+    document.getElementById('login-email').value = remembered;
+    document.getElementById('login-remember').checked = true;
+  }
   if (store.get('loggedIn') && store.get('patient')) {
     document.getElementById('login-screen').style.display = 'none';
     window.dispatchEvent(new Event('meditrack:stop-heart'));
@@ -4088,6 +4520,7 @@ if ('Notification' in window && Notification.permission === 'default') {
     updateBadge();
     initSettings();
     renderPatientID();
+    syncPendingData();
   }
 })();
 </script>
