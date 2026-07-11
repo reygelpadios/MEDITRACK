@@ -4,23 +4,23 @@ A modern healthcare web application designed to help patients manage their medic
 
 ---
 
-## ✨ Features
+##  Features
 
-- 🔐 Secure patient registration and login
-- 💊 Medication scheduling and reminder system
-- 📅 Interactive medication calendar with daily schedules
-- ⏰ Smart medication reminders and alarms
-- 📊 Medication history and adherence tracking
-- 👨‍👩‍👧 Caregiver portal for remote patient monitoring
-- 🪪 Digital patient profile management
-- 🌙 Dark and Light mode support
-- 📱 Responsive dashboard for desktop and mobile devices
-- 💾 Offline-first support with localStorage synchronization
-- 🗄️ SQLite database integration for persistent data storage
+-  Secure patient registration and login
+-  Medication scheduling and reminder system
+-  Interactive medication calendar with daily schedules
+-  Smart medication reminders and alarms
+-  Medication history and adherence tracking
+-  Caregiver portal for remote patient monitoring
+-  Digital patient profile management
+-  Dark and Light mode support
+-  Responsive dashboard for desktop and mobile devices
+-  Offline-first support with localStorage synchronization
+-  SQLite database integration for persistent data storage
 
 ---
 
-## 🛠️ Technologies
+##  Technologies
 
 ### Frontend
 - HTML5
@@ -45,7 +45,7 @@ A modern healthcare web application designed to help patients manage their medic
 
 ---
 
-## 📍 About the Project
+##  About the Project
 
 MediTrack was developed to provide a simple and accessible way for patients and caregivers to manage daily medications. The application allows users to schedule medications, receive reminders, monitor adherence, and securely store patient information.
 
@@ -55,7 +55,7 @@ To improve data persistence and reliability, the application evolved from using 
 
 ---
 
-## 🚀 Getting Started
+##  Getting Started
 
 ### 1. Clone the repository
 
@@ -103,7 +103,7 @@ http://localhost:3000
 
 ---
 
-## 📂 Project Structure
+##  Project Structure
 
 ```
 MEDITRACK/
@@ -125,7 +125,7 @@ MEDITRACK/
 
 ---
 
-## 📌 Core Modules
+##  Core Modules
 
 - Authentication System
 - Patient Profile Management
@@ -139,7 +139,7 @@ MEDITRACK/
 
 ---
 
-## 📖 Future Improvements
+##  Future Improvements
 
 - Email and SMS medication reminders
 - Cloud synchronization
@@ -150,7 +150,7 @@ MEDITRACK/
 
 ---
 
-## 👨‍💻 Developers
+##  Developers
 
 - Reygel Padios
 - Louis Emmanuel Añon
@@ -161,6 +161,6 @@ MEDITRACK/
 
 ---
 
-## 📄 License
+##  Purpose
 
 This project was developed for educational purposes as part of a university system integration project.
